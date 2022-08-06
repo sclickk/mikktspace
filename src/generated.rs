@@ -999,15 +999,15 @@ fn merge_verts_fast<I: Geometry>(
         }
     }
 
-    let d = Vec3 {
+    let dim = Vec3 {
         x: max[0] - min[0],
         y: max[1] - min[1],
         z: max[2] - min[2],
     };
 
-    let channel = if d.y > d.x && d.y > d.z {
+    let channel = if dim.y > dim.x && dim.y > dim.z {
         1
-    } else if d.z > d.x {
+    } else if dim.z > dim.x {
         2
     } else {
         0
