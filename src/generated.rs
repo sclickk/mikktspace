@@ -308,9 +308,7 @@ fn generate_tspaces<I: Geometry>(
         let mut unique_subgroups = 0;
         for face_index in group.iter(group_triange_buffer) {
             let face = &triangles[face_index];
-            let mut tmp_group = SubGroup {
-                members: Vec::new(),
-            };
+            let mut tmp_group = SubGroup::zero();
 
             let group_ptr = group as *const Group as *mut Group;
             let index = if face.assigned_group[0] == group_ptr {
