@@ -551,14 +551,9 @@ fn assign_recur(
     // track down vertex
     let vert_rep = group.vertex_representitive;
     let verts = &indices[3 * index..];
-    let i = if verts[0] == vert_rep {
-        0
-    } else if verts[1] == vert_rep {
-        1
-    } else if verts[2] == vert_rep {
-        2
-    } else {
-        return false;
+    let i = match verts.into_iter().position(|i| *i == vert_rep) {
+        Some(i) => i,
+        None => return false,
     };
 
     if info.assigned_group[i] == group {
