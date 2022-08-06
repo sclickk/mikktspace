@@ -4,7 +4,7 @@
 use crate::vector::Vec3;
 use core::{cmp::Ordering, ptr::null_mut};
 
-use crate::{face_vert_to_index, get_normal, get_position, get_tex_coord, Geometry};
+use crate::{face_vert_to_index, get_normal, get_position, get_tex_coord, Geometry, group::{Group, SubGroup}};
 
 #[derive(Copy, Clone)]
 pub struct TSpace {
@@ -85,42 +85,6 @@ impl Triangle {
             flag: 0,
             tspaces_offset: 0,
             vert_num: [0, 0, 0],
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct Group {
-    pub start: usize,
-    pub end: usize,
-    pub vertex_representitive: usize,
-    pub orient_preservering: bool,
-}
-
-impl Group {
-    fn zero() -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            vertex_representitive: 0,
-            orient_preservering: false,
-        }
-    }
-
-    fn iter<'a>(&self, buffer: &'a [usize]) -> impl Iterator<Item = usize> + 'a {
-        buffer[self.start..self.end].iter().copied()
-    }
-}
-
-#[derive(Clone)]
-pub struct SubGroup {
-    pub members: Vec<usize>,
-}
-
-impl SubGroup {
-    const fn zero() -> Self {
-        Self {
-            members: Vec::new(),
         }
     }
 }
@@ -333,7 +297,7 @@ fn generate_tspaces<I: Geometry>(
     group_triange_buffer: &[usize],
     geometry: &mut I,
 ) -> bool {
-    let max_faces = groups.iter().map(|g| g.end - g.start).max().unwrap_or(0);
+    let max_faces = groups.iter().map(|g| g.range.end - g.range.start).max().unwrap_or(0);
     if max_faces == 0 {
         return true;
     }
@@ -548,13 +512,12 @@ fn build4_rule_groups(
                 group.vertex_representitive = indices[face_index * 3 + i];
                 group.orient_preservering = triangles[face_index].flag & 8 != 0;
 
-                group.start = offset;
-                group.end = offset;
+                group.range = offset..offset;
 
                 active_groups += 1;
 
-                group_triange_buffer[group.end] = face_index;
-                group.end += 1;
+                group_triange_buffer[group.range.end] = face_index;
+                group.range.end += 1;
 
                 let or_pre = triangles[face_index].flag & 8 != 0;
                 let right = if i > 0 { i - 1 } else { 2 };
@@ -572,7 +535,7 @@ fn build4_rule_groups(
                     let or_pre2 = triangles[index].flag & 8 != 0;
                     let _diff = or_pre != or_pre2;
                 }
-                offset += group.end - group.start;
+                offset += group.range.end - group.range.start;
             }
         }
     }
@@ -624,8 +587,8 @@ fn assign_recur(
         return false;
     }
 
-    group_triange_buffer[group.end] = index;
-    group.end += 1;
+    group_triange_buffer[group.range.end] = index;
+    group.range.end += 1;
 
     info.assigned_group[i] = group;
 
@@ -848,8 +811,7 @@ fn quick_sort_edges(edges: &mut [Edge], left: usize, right: usize, channel: usiz
             edges.swap(l, r);
             l += 1;
             r -= 1
-        }
-        if l > r {
+        } else {
             break;
         }
     }
@@ -886,16 +848,16 @@ fn degen_prologue(triangles: &mut [Triangle], indices: &mut [usize], num_triangl
     while t < triangles.len() - 1 {
         let fo_a = triangles[t].original_face;
         let fo_b = triangles[t + 1].original_face;
-        if fo_a == fo_b {
+        t += if fo_a == fo_b {
             let is_deg_a = triangles[t].flag & 1 != 0;
             let is_deg_b = triangles[t + 1].flag & 1 != 0;
             if is_deg_a ^ is_deg_b {
                 triangles[t].flag |= 2;
                 triangles[t + 1].flag |= 2;
             }
-            t += 2
+            2
         } else {
-            t += 1
+            1
         }
     }
 
