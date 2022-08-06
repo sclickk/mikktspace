@@ -416,14 +416,13 @@ fn eval_tspace<I: Geometry>(
     geometry: &mut I,
     vertex_representitive: usize,
 ) -> TSpace {
-    let mut angle_sum = 0.0;
     let mut os = Vec3::new(0.0, 0.0, 0.0);
     let mut mag_s = 0.0;
     let mut ot = Vec3::new(0.0, 0.0, 0.0);
     let mut mag_t = 0.0;
 
-    for &face in face_indices {
-        if triangles[face].flag & 4 == 0 {
+    let angle_sum = face_indices.into_iter().fold(0.0, |angle_sum, &face| {
+        angle_sum + if triangles[face].flag & 4 == 0 {
             let idx = match vertex_representitive {
                 r if r == indices[3 * face] => [2, 0, 1],
                 r if r == indices[3 * face + 1] => [0, 1, 2],
@@ -431,23 +430,27 @@ fn eval_tspace<I: Geometry>(
                 _ => return angle_sum,
             };
 
-            let i0 = indices[3 * face + idx[0]];
-            let i1 = indices[3 * face + idx[1]];
-            let i2 = indices[3 * face + idx[2]];
+            let i = [
+                indices[3 * face + idx[0]],
+                indices[3 * face + idx[1]],
+                indices[3 * face + idx[2]],
+            ];
 
-            let p0 = get_position(geometry, i0);
-            let p1 = get_position(geometry, i1);
-            let p2 = get_position(geometry, i2);
+            let p = [
+                get_position(geometry, i[0]),
+                get_position(geometry, i[1]),
+                get_position(geometry, i[2]),
+            ];
 
-            let n = get_normal(geometry, i1);
+            let n = get_normal(geometry, i[1]);
 
             let xos = (triangles[face].os - n.dot(triangles[face].os) * n).safe_normalize();
-            let xot = (triangles[face].ot - n.dot(triangles[face].ot) * n).safe_normalize();
+            let xot = (triangles[face].ot - n.dot(triangles[face].ot) * n).safe_normalize(); 
 
-            let v1 = p0 - p1;
+            let v1 = p[0] - p[1];
             let v1 = (v1 - n.dot(v1) * n).safe_normalize();
 
-            let v2 = p2 - p1;
+            let v2 = p[2] - p[1];
             let v2 = (v2 - n.dot(v2) * n).safe_normalize();
 
             let cos = v1.dot(v2).clamp(-1.0, 1.0);
@@ -458,9 +461,11 @@ fn eval_tspace<I: Geometry>(
             ot = xot + (angle * xot);
             mag_s += angle * triangles[face].mag_s;
             mag_t += angle * triangles[face].mag_t;
-            angle_sum += angle
+            angle
+        } else {
+            0.0
         }
-    }
+    });
 
     let os = os.safe_normalize();
     let ot = ot.safe_normalize();
