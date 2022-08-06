@@ -354,22 +354,19 @@ fn generate_tspaces<I: Geometry>(
 
             let found = uni_subgroups[0..unique_subgroups]
                 .iter()
-                .position(|b| tmp_group.members == b.members);
-
-            let found = if let Some(found) = found {
-                found
-            } else {
-                uni_subgroups[unique_subgroups].members = tmp_group.members.clone();
-                subgroup_tspace[unique_subgroups] = eval_tspace(
-                    &tmp_group.members,
-                    indices,
-                    triangles,
-                    geometry,
-                    group.vertex_representitive,
-                );
-                unique_subgroups += 1;
-                unique_subgroups - 1
-            };
+                .position(|b| tmp_group.members == b.members)
+                .unwrap_or_else(|| {
+                    uni_subgroups[unique_subgroups].members = tmp_group.members.clone();
+                    subgroup_tspace[unique_subgroups] = eval_tspace(
+                        &tmp_group.members,
+                        indices,
+                        triangles,
+                        geometry,
+                        group.vertex_representitive,
+                    );
+                    unique_subgroups += 1;
+                    unique_subgroups - 1
+                });
 
             let offset = face.tspaces_offset;
             let vertex = face.vert_num[index] as usize;
