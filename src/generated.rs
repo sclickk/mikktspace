@@ -634,13 +634,13 @@ fn init_tri_info<I: Geometry>(triangles: &mut [Triangle], indices: &[usize], geo
             let len_os = os.length();
             let len_ot = ot.length();
 
-            let s = if info.flag & 8 == 0 { -1.0 } else { 1.0 };
+            let sign = if info.flag & 8 == 0 { -1.0 } else { 1.0 };
 
             if Vec3::not_zero(len_os) {
-                info.os = (s / len_os) * os
+                info.os = (sign / len_os) * os
             }
             if Vec3::not_zero(len_ot) {
-                info.ot = (s / len_ot) * ot
+                info.ot = (sign / len_ot) * ot
             }
             info.mag_s = len_os / abs_area;
             info.mag_t = len_ot / abs_area;
