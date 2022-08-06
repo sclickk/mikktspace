@@ -815,12 +815,14 @@ fn quick_sort_edges(edges: &mut [Edge], left: usize, right: usize, channel: usiz
 
 // returns the texture area times 2
 fn calc_tex_area<I: Geometry>(geometry: &mut I, indices: &[usize]) -> f32 {
-    let t1 = get_tex_coord(geometry, indices[0]);
-    let t2 = get_tex_coord(geometry, indices[1]);
-    let t3 = get_tex_coord(geometry, indices[2]);
+    let t = [
+        get_tex_coord(geometry, indices[0]),
+        get_tex_coord(geometry, indices[1]),
+        get_tex_coord(geometry, indices[2]),
+    ];
 
-    let t21 = t2 - t1;
-    let t31 = t3 - t1;
+    let t21 = t[1] - t[0];
+    let t31 = t[2] - t[0];
 
     let signed_area_st_x2 = t21.x * t31.y - t21.y * t31.x;
     if signed_area_st_x2 < 0.0 {
