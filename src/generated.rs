@@ -1174,7 +1174,7 @@ fn generate_initial_vertices_index_list<I: Geometry>(
         tspaces_offset += verts
     }
 
-    for info in triangles.iter_mut() {
+    for info in triangles.into_iter() {
         info.flag = 0;
     }
 
