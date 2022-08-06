@@ -264,14 +264,11 @@ fn degen_epilogue<I: Geometry>(
             let vtx = triangle.vert_num;
             let flag = 1 << vtx[0] | 1 << vtx[1] | 1 << vtx[2];
 
-            let missing_index = if flag & 2 == 0 {
-                1
-            } else if flag & 4 == 0 {
-                2
-            } else if flag & 8 == 0 {
-                3
-            } else {
-                0
+            let missing_index = match flag {
+                f if f & 2 == 0 => 1,
+                f if f & 4 == 0 => 2,
+                f if f & 8 == 0 => 3,
+                _ => 0,
             };
 
             let face_num = triangle.original_face;
