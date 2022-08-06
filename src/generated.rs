@@ -424,14 +424,11 @@ fn eval_tspace<I: Geometry>(
 
     for &face in face_indices {
         if triangles[face].flag & 4 == 0 {
-            let idx = if indices[3 * face] == vertex_representitive {
-                [2, 0, 1]
-            } else if indices[3 * face + 1] == vertex_representitive {
-                [0, 1, 2]
-            } else if indices[3 * face + 2] == vertex_representitive {
-                [1, 2, 0]
-            } else {
-                continue;
+            let idx = match vertex_representitive {
+                r if r == indices[3 * face] => [2, 0, 1],
+                r if r == indices[3 * face + 1] => [0, 1, 2],
+                r if r == indices[3 * face + 2] => [1, 2, 0],
+                _ => return angle_sum,
             };
 
             let i0 = indices[3 * face + idx[0]];
