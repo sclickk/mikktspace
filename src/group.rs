@@ -15,7 +15,7 @@ impl Group {
     }
 
     pub(crate) fn iter<'a>(&self, buffer: &'a [usize]) -> impl Iterator<Item = usize> + 'a {
-        buffer[self.range.clone()].iter().copied()
+        buffer[self.range.clone()].into_iter().copied()
     }
 }
 
