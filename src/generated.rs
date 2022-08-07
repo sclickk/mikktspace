@@ -308,7 +308,6 @@ fn generate_tspaces<I: Geometry>(
         let mut unique_subgroups = 0;
         for face_index in group.iter(group_triange_buffer) {
             let face = &triangles[face_index];
-            let mut tmp_group = SubGroup::zero();
 
             let group_ptr = group as *const Group as *mut Group;
             let index = if face.assigned_group[0] == group_ptr {
@@ -350,7 +349,9 @@ fn generate_tspaces<I: Geometry>(
                 members.sort_unstable();
             }
 
-            tmp_group.members = members.clone();
+            let tmp_group = SubGroup {
+                members: members.clone(),
+            };
 
             let found = uni_subgroups[0..unique_subgroups]
                 .iter()
