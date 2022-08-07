@@ -131,7 +131,6 @@ impl TmpVert {
 pub fn generate_tangent_space<I: Geometry>(geometry: &mut I, angular_threshold: f32) -> bool {
     let mut total_triangles = 0;
     let num_faces = geometry.num_faces();
-    let thres_cos = angular_threshold.to_radians().cos();
     for face in 0..num_faces {
         let verts = geometry.num_vertices_of_face(face);
         if verts == 3 {
@@ -187,6 +186,8 @@ pub fn generate_tangent_space<I: Geometry>(geometry: &mut I, angular_threshold: 
         };
         num_tspaces
     ];
+
+    let thres_cos = angular_threshold.to_radians().cos();
 
     if !generate_tspaces(
         &mut tspaces,
