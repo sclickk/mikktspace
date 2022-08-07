@@ -896,6 +896,7 @@ fn degen_prologue(triangles: &mut [Triangle], indices: &mut [usize], num_triangl
 }
 
 fn generate_shared_vertices_index_list<I: Geometry>(indices: &mut [usize], geometry: &mut I) {
+    // Generate bounding box
     let mut min = get_position(geometry, 0);
     let mut max = min;
 
@@ -928,11 +929,13 @@ fn generate_shared_vertices_index_list<I: Geometry>(indices: &mut [usize], geome
         (0, min.x, max.x)
     };
 
+    // make allocations
     let mut hash_table = vec![0usize; indices.len()];
     let mut hash_offsets = vec![0usize; CELLS];
     let mut hash_count = vec![0usize; CELLS];
     let mut hash_count2 = vec![0usize; CELLS];
 
+    // count amount of elements in each cell unit
     for &index in indices.iter() {
         let pt = get_position(geometry, index);
         let value = match channel {
@@ -944,11 +947,13 @@ fn generate_shared_vertices_index_list<I: Geometry>(indices: &mut [usize], geome
         hash_count[cell] += 1;
     }
 
+    // evaluate start index of each cell.
     hash_offsets[0] = 0;
     for k in 1..CELLS {
         hash_offsets[k] = hash_offsets[k - 1] + hash_count[k - 1];
     }
 
+    // insert vertices
     for (i, &index) in indices.iter().enumerate() {
         let pt = get_position(geometry, index);
         let value = match channel {
@@ -957,13 +962,16 @@ fn generate_shared_vertices_index_list<I: Geometry>(indices: &mut [usize], geome
             _ => pt.z,
         };
         let cell = find_grid_cell(min, max, value);
-        hash_table[hash_offsets[cell] + hash_count2[cell]] = i;
+        hash_table[hash_offsets[cell] + hash_count2[cell]] = i; // vertex i has been inserted.
         hash_count2[cell] += 1;
     }
 
+    // find maximum amount of entries in any hash entry
     let max_count = hash_count.iter().copied().max().unwrap_or(0);
 
     let mut tmp = vec![TmpVert::zero(); max_count];
+
+    // complete the merge
     for k in 0..CELLS {
         // extract table of cell k and amount of entries in it
         let table = &hash_table[hash_offsets[k]..];
