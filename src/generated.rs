@@ -13,7 +13,7 @@ pub struct TSpace {
     pub ot: Vec3,
     pub mag_t: f32,
 
-    pub counter: usize,
+    pub counter: usize, // this is to average back into quads.
     pub orient: bool,
 }
 
@@ -61,10 +61,11 @@ pub struct Triangle {
     pub assigned_group: [*mut Group; 3],
 
     pub os: Vec3,
-    pub mag_s: f32,
+    pub mag_s: f32, // original magnitudes
     pub ot: Vec3,
     pub mag_t: f32,
 
+    // determines if the current and the next triangle are a quad.
     pub original_face: usize,
     pub tspaces_offset: usize,
 
