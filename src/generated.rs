@@ -213,8 +213,8 @@ pub fn generate_tangent_space<I: Geometry>(geometry: &mut I, angular_threshold: 
         if !(num_vertices != 3 && num_vertices != 4) {
             for vertex in 0..num_vertices {
                 let tspace = &tspaces[index];
-                let tangent = Vec3::new(tspace.os.x, tspace.os.y, tspace.os.z);
-                let bitangent = Vec3::new(tspace.ot.x, tspace.ot.y, tspace.ot.z);
+                let tangent = tspace.os;
+                let bitangent = tspace.ot;
                 geometry.set_tangent(
                     tangent.into(),
                     bitangent.into(),
