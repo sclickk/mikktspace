@@ -750,15 +750,19 @@ fn build_neighbors_fast(triangles: &mut [Triangle], edges: &mut [Edge], indices:
     }
 }
 
+// resolve ordering and edge number
 fn get_edge(indices: &[usize], i0: usize, i1: usize) -> (usize, usize, usize) {
+    // test if first index is on the edge
     if indices[0] == i0 || indices[0] == i1 {
+        // test if second index is on the edge
         if indices[1] == i0 || indices[1] == i1 {
-            (0, indices[0], indices[1])
+            (0, indices[0], indices[1]) // first edge
         } else {
-            (2, indices[2], indices[0])
+            (2, indices[2], indices[0]) // third edge
         }
     } else {
-        (1, indices[1], indices[2])
+        // only second and third index is on the edge
+        (1, indices[1], indices[2]) // second edge
     }
 }
 
