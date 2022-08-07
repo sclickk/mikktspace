@@ -857,6 +857,8 @@ fn degen_prologue(triangles: &mut [Triangle], indices: &mut [usize], num_triangl
         }
     }
 
+    // reorder list so all degen triangles are moved to the back
+    // without reordering the good triangles
     let mut next_good_triangle_search_index = 1;
     let mut t = 0;
     let mut still_finding_good_ones = true;
@@ -867,6 +869,7 @@ fn degen_prologue(triangles: &mut [Triangle], indices: &mut [usize], num_triangl
                 next_good_triangle_search_index = t + 2
             }
         } else {
+            // search for the first good triangle.
             let mut just_a_degenerate = true;
             while just_a_degenerate && next_good_triangle_search_index < triangles.len() {
                 let is_good = triangles[next_good_triangle_search_index].flag & 1 == 0;
@@ -879,13 +882,14 @@ fn degen_prologue(triangles: &mut [Triangle], indices: &mut [usize], num_triangl
 
             let (t0, t1) = (t, next_good_triangle_search_index);
             next_good_triangle_search_index += 1;
+            // swap triangle t0 and t1
             if !just_a_degenerate {
                 for i in 0..3 {
                     indices.swap(t0 * 3 + i, t1 * 3 + i);
                 }
                 triangles.swap(t0, t1);
             } else {
-                still_finding_good_ones = false
+                still_finding_good_ones = false	// this is not supposed to happen
             }
         }
 
