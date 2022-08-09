@@ -11,7 +11,8 @@ use crate::{
     get_position,
     Geometry,
     group::{Group, SubGroup},
-    tspace::TSpace
+    tspace::TSpace,
+    edge::Edge,
 };
 
 // To avoid visual errors (distortions/unwanted hard edges in lighting), when using sampled normal maps, the
@@ -70,29 +71,6 @@ impl Triangle {
             flag: 0,
             tspaces_offset: 0,
             vert_num: [0, 0, 0],
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct Edge {
-    pub i0: usize,
-    pub i1: usize,
-    pub f: usize,
-}
-
-impl Edge {
-    const fn zero() -> Self {
-        Self { i0: 0, i1: 0, f: 0 }
-    }
-
-    #[inline]
-    fn array(&self, channel: usize) -> usize {
-        match channel {
-            0 => self.i0,
-            1 => self.i1,
-            2 => self.f,
-            _ => unreachable!("wtf?"),
         }
     }
 }
