@@ -434,17 +434,13 @@ fn eval_tspace<I: Geometry>(
                 _ => return angle_sum,
             };
 
-            let i = [
-                indices[3 * face + idx[0]],
-                indices[3 * face + idx[1]],
-                indices[3 * face + idx[2]],
-            ];
+            let i = idx.map(|idx| {
+                indices[3 * face + idx]
+            });
 
-            let p = [
-                get_position(geometry, i[0]),
-                get_position(geometry, i[1]),
-                get_position(geometry, i[2]),
-            ];
+            let p = i.map(|i| {
+                get_position(geometry, i)
+            });
 
             let n = get_normal(geometry, i[1]);
 
