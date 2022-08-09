@@ -1,6 +1,6 @@
 #[derive(Clone)]
 pub struct Group {
-    pub range: std::ops::Range<usize>,
+    pub range: core::ops::Range<usize>,
     pub vertex_representitive: usize,
     pub orient_preservering: bool,
 }
