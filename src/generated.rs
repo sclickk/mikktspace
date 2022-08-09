@@ -4,31 +4,15 @@
 use crate::vector::Vec3;
 use core::{cmp::Ordering, ptr::null_mut};
 
-use crate::{face_vert_to_index, get_normal, get_position, get_tex_coord, Geometry, group::{Group, SubGroup}};
-
-#[derive(Copy, Clone)]
-pub struct TSpace {
-    pub os: Vec3,
-    pub mag_s: f32,
-    pub ot: Vec3,
-    pub mag_t: f32,
-
-    pub counter: usize, // this is to average back into quads.
-    pub orient: bool,
-}
-
-impl TSpace {
-    pub fn zero() -> Self {
-        Self {
-            os: Vec3::zero(),
-            mag_s: 0.0,
-            ot: Vec3::zero(),
-            mag_t: 0.0,
-            counter: 0,
-            orient: false,
-        }
-    }
-}
+use crate::{
+    face_vert_to_index,
+    get_normal,
+    get_tex_coord,
+    get_position,
+    Geometry,
+    group::{Group, SubGroup},
+    tspace::TSpace
+};
 
 // To avoid visual errors (distortions/unwanted hard edges in lighting), when using sampled normal maps, the
 // normal map sampler must use the exact inverse of the pixel shader transformation.

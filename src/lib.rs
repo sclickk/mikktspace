@@ -1,6 +1,7 @@
 mod group;
 mod generated;
 mod vector;
+mod tspace;
 
 /// The interface by which mikktspace interacts with your geometry.
 pub trait Geometry {
