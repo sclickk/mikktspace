@@ -331,12 +331,13 @@ fn generate_tspaces<I: Geometry>(
             let of1 = face.original_face;
             members.clear();
             for t in group.iter(group_triange_buffer) {
-                let of2 = triangles[t].original_face;
+                let triangle = &triangles[t];
+                let of2 = triangle.original_face;
 
-                let os2 = (triangles[t].os - n.dot(triangles[t].os) * n).safe_normalize();
-                let ot2 = (triangles[t].ot - n.dot(triangles[t].ot) * n).safe_normalize();
+                let os2 = (triangle.os - n.dot(triangle.os) * n).safe_normalize();
+                let ot2 = (triangle.ot - n.dot(triangle.ot) * n).safe_normalize();
 
-                let any = (face.flag | triangles[t].flag) & 4 != 0;
+                let any = (face.flag | triangle.flag) & 4 != 0;
                 let same_original_face = of1 == of2;
 
                 let cos_s = os.dot(os2);
